@@ -5,28 +5,23 @@ Author: Petcov Nicolai FAF-233
 """
 
 def char_to_num(char):
-    """Convert character to number (A=0, B=1, ..., Z=25)"""
     return ord(char.upper()) - ord('A')
 
 def num_to_char(num):
-    """Convert number to character (0=A, 1=B, ..., 25=Z)"""
     return chr(num + ord('A'))
 
 def validate_key(key):
-    """Validate key is between 1 and 25"""
     if not 1 <= key <= 25:
         raise ValueError("Key must be between 1 and 25 inclusive")
     return key
 
 def validate_text(text):
-    """Validate text contains only letters A-Z, a-z, and spaces"""
     for char in text:
         if not char.isalpha() and char != ' ':
             raise ValueError("Text must contain only letters (A-Z, a-z) and spaces")
     return text
 
 def preprocess_text(text):
-    """Convert to uppercase and remove spaces"""
     return ''.join(text.upper().split())
 
 # Task 1.1: Basic Caesar Cipher
@@ -66,7 +61,6 @@ def caesar_decrypt(ciphertext, key):
 
 # Task 1.2: Caesar Cipher with Permutation
 def validate_keyword(keyword):
-    """Validate keyword contains only letters and has length >= 7"""
     if len(keyword) < 7:
         raise ValueError("Keyword must have at least 7 characters")
     if not keyword.isalpha():
@@ -74,21 +68,15 @@ def validate_keyword(keyword):
     return keyword
 
 def create_permuted_alphabet(keyword):
-    """
-    Create permuted alphabet from keyword
-    Keyword letters first (no duplicates), then remaining letters
-    """
     keyword = keyword.upper()
     permuted = ""
     seen = set()
 
-    # Add unique letters from keyword
     for char in keyword:
         if char not in seen:
             permuted += char
             seen.add(char)
 
-    # Add remaining letters of alphabet
     for i in range(26):
         char = num_to_char(i)
         if char not in seen:
@@ -107,16 +95,12 @@ def caesar_permutation_encrypt(plaintext, key1, key2):
     validate_text(plaintext)  # Validate before preprocessing
     plaintext = preprocess_text(plaintext)
 
-    # Create permuted alphabet
     permuted_alphabet = create_permuted_alphabet(key2)
 
     ciphertext = ""
     for char in plaintext:
-        # Find position in normal alphabet
         pos = char_to_num(char)
-        # Apply shift in permuted alphabet
         new_pos = (pos + key1) % 26
-        # Get character from permuted alphabet
         ciphertext += permuted_alphabet[new_pos]
 
     return ciphertext
@@ -132,16 +116,12 @@ def caesar_permutation_decrypt(ciphertext, key1, key2):
     validate_text(ciphertext)  # Validate before preprocessing
     ciphertext = preprocess_text(ciphertext)
 
-    # Create permuted alphabet
     permuted_alphabet = create_permuted_alphabet(key2)
 
     plaintext = ""
     for char in ciphertext:
-        # Find position in permuted alphabet
         pos = permuted_alphabet.index(char)
-        # Apply reverse shift
         original_pos = (pos - key1) % 26
-        # Get character from normal alphabet
         plaintext += num_to_char(original_pos)
 
     return plaintext
@@ -167,13 +147,12 @@ def brute_force_attack(ciphertext):
     return results
 
 def main():
-    """Main interactive program"""
     print("=" * 50)
     print("CAESAR CIPHER - Laboratory Work No. 1")
     print("=" * 50)
 
     while True:
-        print("\n[MENU]")
+        print("\n[MENU]\n")
         print("1. Basic Caesar Cipher (Encrypt)")
         print("2. Basic Caesar Cipher (Decrypt)")
         print("3. Caesar with Permutation (Encrypt)")
@@ -234,10 +213,8 @@ def main():
         except Exception as e:
             print(f"\n[ERROR] An unexpected error occurred: {e}")
 
-# Test examples
 if __name__ == "__main__":
 
-    # Start interactive program
     print("\n" + "=" * 50)
     input("Press Enter to start interactive mode...")
     main()
