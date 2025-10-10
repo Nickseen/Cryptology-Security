@@ -4,11 +4,15 @@ Laboratory Work No. 1
 Author: Petcov Nicolai FAF-233
 """
 
+ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+CHAR_TO_NUM = {char: i for i, char in enumerate(ALPHABET)}
+NUM_TO_CHAR = {i: char for i, char in enumerate(ALPHABET)}
+
 def char_to_num(char):
-    return ord(char.upper()) - ord('A')
+    return CHAR_TO_NUM[char.upper()]
 
 def num_to_char(num):
-    return chr(num + ord('A'))
+    return NUM_TO_CHAR[num]
 
 def validate_key(key):
     if not 1 <= key <= 25:
@@ -77,8 +81,7 @@ def create_permuted_alphabet(keyword):
             permuted += char
             seen.add(char)
 
-    for i in range(26):
-        char = num_to_char(i)
+    for char in ALPHABET:
         if char not in seen:
             permuted += char
 
