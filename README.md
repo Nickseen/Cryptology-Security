@@ -1,138 +1,96 @@
-# Laboratory Work No. 3 - Polyalphabetic Ciphers
+# Lab 4 - DES (Data Encryption Standard)
 
-## Playfair Encryption Algorithm
+Implementation of the DES block cipher algorithm in Python.
 
-### Description
+## � Description
 
-Implementation of the Playfair algorithm for the Romanian alphabet (31 letters) in Python.
+Full implementation of the **Data Encryption Standard (DES)** - a symmetric-key block cipher that encrypts 64-bit blocks using a 56-bit key through 16 rounds of processing.
 
-### Implemented Requirements
+## ✨ Features
 
-✓ **Complete Romanian alphabet** - 31 letters (A-Z + Ă, Â, Î, Ș, Ț)  
-✓ **Character validation** - Verifies if the user enters valid characters (A-Z, a-z, Romanian letters)  
-✓ **Invalid character suggestions** - Displays the correct range if invalid characters are entered  
-✓ **Key validation** - Minimum key length is 7 characters  
-✓ **Available operations** - Encryption and decryption  
-✓ **Interactive interface** - User can choose operation, enter key and message  
+- ✓ **Complete DES encryption/decryption** (64-bit blocks)
+- ✓ **Key schedule generation** (16 round subkeys from master key)
+- ✓ **All DES components:** Initial Permutation, Final Permutation, Expansion, Permutation, S-boxes
+- ✓ **Special laboratory task:** Calculate Rᵢ from S-box outputs and Lᵢ₋₁
 
-### Functionality
-
-#### 1. Validation Functions
-- `validate_character(character)` - Checks if a character is valid
-- `validate_text(text)` - Validates text and suggests the correct range
-- `validate_key(key)` - Checks the length and validity of the key
-
-#### 2. PlayfairCipher Class
-- `_create_matrix()` - Creates the 6x5 Playfair matrix
-- `_find_position(character)` - Finds the position of a character in the matrix
-- `_prepare_text(text)` - Prepares text (splits into bigrams)
-  - Removes spaces and converts to uppercase
-  - Replaces J with I (combined in matrix)
-  - Splits into pairs, inserting X between identical letters
-  - Example: "FREE" → "FR EX EZ", "SSS" → "SX SZ"
-- `encrypt(plaintext)` - Encryption function
-- `decrypt(ciphertext)` - Decryption function
-- `display_matrix()` - Displays the Playfair matrix
-
-#### 3. User Interface
-- Interactive menu with multiple options
-- Demonstration with predefined examples
-- Information about the Romanian alphabet
-- Complete user input validation
-
-### Usage
+## 🚀 Usage
 
 ```bash
-python3 lab3_permutation_cipher.py
+python3 lab4_des.py
 ```
 
-### Examples
+## 💡 Operation Modes
 
-**Encryption:**
-- Original text: `SALUT`
-- Bigrams: `SA LU TX`
-- Encrypted text: (depends on key)
+### 1. Full DES Encryption
+Encrypt 64-bit plaintext with 56-bit key (input as 16 hex digits).
 
-**Decryption:**
-- The inverse algorithm is applied to obtain the original text
-
-### Important Notes
-
-- Letters **J** and **I** are combined in the Playfair matrix
-- Matrix size is **6x5** (30 letters)
-- Adding new spaces after decryption is done **manually**, depending on the message logic
-- Minimum key length: **7 characters**
-- When duplicate letters appear consecutively, filler letter (X or Z) is inserted
-- Example: "FREE" becomes "FR EX EZ" (E-E separated by X)
-
-### Code Structure
-
+**Example:**
 ```
-lab3_permutation_cipher.py
-│
-├── CONSTANTS
-│   ├── ROMANIAN_ALPHABET
-│   └── MIN_KEY_LENGTH
-│
-├── VALIDATION FUNCTIONS
-│   ├── validate_character()
-│   ├── validate_text()
-│   └── validate_key()
-│
-├── PLAYFAIR CLASS
-│   └── PlayfairCipher
-│       ├── __init__()
-│       ├── _create_matrix()
-│       ├── _find_position()
-│       ├── _prepare_text()
-│       ├── encrypt()
-│       ├── decrypt()
-│       └── display_matrix()
-│
-├── INTERFACE FUNCTIONS
-│   ├── read_key()
-│   ├── read_text()
-│   ├── choose_operation()
-│   ├── display_result()
-│   └── demonstration()
-│
-└── MAIN FUNCTION
-    └── main()
+Plaintext:  0123456789ABCDEF
+Key:        133457799BBCDFF1
+Ciphertext: 85E813540F0AB405
 ```
 
-### Algorithm Details
+### 2. Full DES Decryption
+Decrypt ciphertext back to original plaintext.
 
-#### Bigram Preparation Logic
+**Example:**
+```
+Ciphertext: 85E813540F0AB405
+Key:        133457799BBCDFF1
+Plaintext:  0123456789ABCDEF
+```
 
-When preparing text for Playfair encryption:
+### 3. Round Calculation (Lab Task)
+Calculate **Rᵢ** knowing **Lᵢ₋₁** (32 bits) and S-box outputs **S₁(B₁)S₂(B₂)...S₈(B₈)**.
 
-1. **Remove spaces** and convert to uppercase
-2. **Replace J with I** (they are combined in the matrix)
-3. **Split into pairs** ensuring no pair has identical letters:
-   - If two consecutive letters are the same, insert filler (X or Z)
-   - Move index by 1 to process the repeated letter again
-   - Example: `FREE` → `F-R`, `E-X` (E repeated), `E-Z` (E from position 3)
-   - Example: `SSS` → `S-X`, `S-X` (each S separated by filler)
-4. **Add filler** at the end if text length is odd
+**Example:**
+```
+L_(i-1): FFFFFFFF (8 hex digits)
+S-box outputs: 5 A 3 7 2 B 4 8 (8 hex digits)
+Result: R_i calculated
+```
 
-#### Encryption Rules
+## 🔐 Algorithm Overview
 
-1. **Same row**: Replace with letters to the right (wrap around)
-2. **Same column**: Replace with letters below (wrap around)
-3. **Rectangle**: Replace with letters on same row but opposite corners
+**DES Structure:**
+- **Block size:** 64 bits
+- **Key size:** 56 bits (stored in 64 bits with parity)
+- **Rounds:** 16
+- **Structure:** Feistel network
 
-### Files
+**Components:**
+- **IP/FP:** Initial and Final Permutations
+- **E-expansion:** 32 bits → 48 bits
+- **S-boxes:** 8 substitution tables (6 bits → 4 bits each)
+- **P-permutation:** Final 32-bit permutation
+- **Key schedule:** Generates 16 subkeys using PC-1, PC-2, and left shifts
 
-- `lab3_permutation_cipher.py` - Main program with Playfair algorithm
-- `test_playfair.py` - Test script for basic functionality
-- `test_bigrams.py` - Test script for bigram preparation logic
-- `ALGORITHM_EXPLANATION.md` - Detailed algorithm explanation
-- `EXAMPLES.md` - Usage examples
-- `README.md` - This file
+## 📁 File Structure
 
-### Author
+```
+lab4_des.py
+├── Constants (IP, FP, E, P, S-boxes, PC-1, PC-2, shift schedule)
+├── Utility functions (permute, xor, left_shift)
+├── Core functions
+│   ├── s_box_substitution()
+│   ├── f_function()
+│   ├── generate_subkeys()
+│   ├── des_encrypt_block()
+│   ├── des_decrypt_block()
+│   └── calculate_ri_from_sboxes()
+└── Interactive menu
+```
 
-Student: Nicola  
-Date: October 2025  
-Repository: Cryptology-Security 
-Branch: Lab3
+## 👨‍💻 Author
+
+**Student:** Nicola Petcov  
+**Repository:** [Cryptology-Security](https://github.com/Nickseen/Cryptology-Security)  
+**Branch:** Lab4  
+**Date:** November 2025
+
+## 📝 Note
+
+DES is a historical algorithm. For modern applications, use **AES** (Advanced Encryption Standard).
+
+Educational purposes only.
