@@ -129,7 +129,7 @@ def xor(bits1, bits2):
 def s_box_substitution(expanded_bits):
     result = ''
     for i in range(8):
-        block = expanded_bits[i * 6:(i + 1) * 6]
+        block = expanded_bits[i * 6:(i + 1) * 6] 
         row = int(block[0] + block[5], 2)
         col = int(block[1:5], 2)
         val = S_BOXES[i][row][col]
@@ -138,16 +138,16 @@ def s_box_substitution(expanded_bits):
 
 
 def f_function(right_half, subkey):
-    expanded = permute(right_half, EXPANSION_TABLE)
+    expanded = permute(right_half, EXPANSION_TABLE) # 32 → 48
     xored = xor(expanded, subkey)
-    substituted = s_box_substitution(xored)
+    substituted = s_box_substitution(xored) # 48 → 32
     permuted = permute(substituted, PERMUTATION_TABLE)
     return permuted
 
 
 def generate_subkeys(key):
-    key_bits = format(int(key, 16), '064b')
-    permuted_key = permute(key_bits, PC1)
+    key_bits = format(int(key, 16), '064b') # hex to 64-bit binary
+    permuted_key = permute(key_bits, PC1) # 64 → 56
     left = permuted_key[:28]
     right = permuted_key[28:]
     subkeys = []
@@ -155,25 +155,25 @@ def generate_subkeys(key):
         left = left_shift(left, shift)
         right = left_shift(right, shift)
         combined = left + right
-        subkey = permute(combined, PC2)
+        subkey = permute(combined, PC2) # 56 → 48
         subkeys.append(subkey)
-    return subkeys
+    return subkeys # 16 keys of 48 bits each
 
 
 def des_encrypt_block(plaintext, key):
     plaintext_bits = format(int(plaintext, 16), '064b')
-    permuted = permute(plaintext_bits, INITIAL_PERMUTATION)
+    permuted = permute(plaintext_bits, INITIAL_PERMUTATION) # Initial shuffle
     left = permuted[:32]
     right = permuted[32:]
     subkeys = generate_subkeys(key)
     for i in range(16):
         temp = right
         f_result = f_function(right, subkeys[i])
-        right = xor(left, f_result)
-        left = temp
+        right = xor(left, f_result) # new R => L XOR f(R, K)
+        left = temp # new L => old R
     combined = right + left
-    ciphertext_bits = permute(combined, FINAL_PERMUTATION)
-    return hex(int(ciphertext_bits, 2))[2:].upper().zfill(16)
+    ciphertext_bits = permute(combined, FINAL_PERMUTATION) # Final shuffle
+    return hex(int(ciphertext_bits, 2))[2:].upper().zfill(16) # bit to hex
 
 
 def des_decrypt_block(ciphertext, key):
