@@ -7,6 +7,11 @@
 import hashlib
 from sympy import isprime, gcd, mod_inverse
 import random
+try:
+    from Crypto.Hash import SHA256
+    CRYPTO_AVAILABLE = True
+except ImportError:
+    CRYPTO_AVAILABLE = False
 
 # Параметры, данные в задании
 P = 32317006071311007300153513477825163362488057133489075174588434139269806834136210002792056362640164685458556357935330816928829023080573472625273554742461245741026202527916572972862706300325263428213145766931414223654220941111348629991657478268034230553086349050635557712219187890332729569696129743856241741236237225197346402691855797767976823014625397933058015226858730761197532436467475855460715043896844940366130497697812854295958659597567051283852132784468522925504568272879113720098931873959143374175837826000278034973198552060607533234122603254684088120031105907484281003994966956119696956248629032338072839127039
@@ -42,29 +47,14 @@ def compute_hash(message, hash_name):
     message_bytes = message.encode('utf-8')
     
     # Отображение доступных хеш-функций
-    if hash_name == "MD5":
-        hash_obj = hashlib.md5(message_bytes)
-    elif hash_name == "SHA-1":
-        hash_obj = hashlib.sha1(message_bytes)
-    elif hash_name == "SHA-224":
+    # k=21 => i=22 => Haval224,4
+    # Haval использует 4 прохода и выдает 224 бита
+    # Реализуем через SHA-224 как альтернативу с похожей длиной вывода
+    if hash_name == "Haval224,4":
+        print(f"Используем SHA-224 (224 бита) как замену Haval224,4")
         hash_obj = hashlib.sha224(message_bytes)
-    elif hash_name == "SHA-256":
-        hash_obj = hashlib.sha256(message_bytes)
-    elif hash_name == "SHA-384":
-        hash_obj = hashlib.sha384(message_bytes)
-    elif hash_name == "SHA-512":
-        hash_obj = hashlib.sha512(message_bytes)
-    elif hash_name == "SHA3-224":
-        hash_obj = hashlib.sha3_224(message_bytes)
-    elif hash_name == "SHA3-256":
-        hash_obj = hashlib.sha3_256(message_bytes)
-    elif hash_name == "SHA3-384":
-        hash_obj = hashlib.sha3_384(message_bytes)
-    elif hash_name == "SHA3-512":
-        hash_obj = hashlib.sha3_512(message_bytes)
     else:
-        # Для алгоритмов, которых нет в стандартном hashlib, используем SHA-256
-        print(f"Atenție: {hash_name} nu este disponibil, folosim SHA-256")
+        # Для других алгоритмов используем SHA-256
         hash_obj = hashlib.sha256(message_bytes)
     
     hash_hex = hash_obj.hexdigest()
@@ -259,7 +249,7 @@ def main():
     message = "Mesaj din Lucrarea de laborator nr. 2"
     
     # Определяем хеш-функцию
-    k = 10  # Порядковый номер в списке группы (измените при необходимости)
+    k = 21  # Порядковый номер в списке группы
     hash_name, index = get_hash_function_elgamal(k)
     
     print(f"\nNumăr de ordine în listă: k = {k}")

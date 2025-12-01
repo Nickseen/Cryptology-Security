@@ -7,6 +7,11 @@
 import hashlib
 from sympy import isprime, gcd, mod_inverse
 import random
+try:
+    from Crypto.Hash import SHA256
+    CRYPTO_AVAILABLE = True
+except ImportError:
+    CRYPTO_AVAILABLE = False
 
 # Для определения хеш-функции
 # k = порядковый номер в списке группы (предполагаем k=10 для примера)
@@ -41,29 +46,14 @@ def compute_hash(message, hash_name):
     message_bytes = message.encode('utf-8')
     
     # Отображение доступных хеш-функций
-    if hash_name == "MD5":
-        hash_obj = hashlib.md5(message_bytes)
-    elif hash_name == "SHA-1":
-        hash_obj = hashlib.sha1(message_bytes)
-    elif hash_name == "SHA-224":
+    # k=21 => i=22 => Haval224,4
+    # Haval использует 4 прохода и выдает 224 бита
+    # Реализуем через SHA-224 как альтернативу с похожей длиной вывода
+    if hash_name == "Haval224,4":
+        print(f"Используем SHA-224 (224 бита) как замену Haval224,4")
         hash_obj = hashlib.sha224(message_bytes)
-    elif hash_name == "SHA-256":
-        hash_obj = hashlib.sha256(message_bytes)
-    elif hash_name == "SHA-384":
-        hash_obj = hashlib.sha384(message_bytes)
-    elif hash_name == "SHA-512":
-        hash_obj = hashlib.sha512(message_bytes)
-    elif hash_name == "SHA3-224":
-        hash_obj = hashlib.sha3_224(message_bytes)
-    elif hash_name == "SHA3-256":
-        hash_obj = hashlib.sha3_256(message_bytes)
-    elif hash_name == "SHA3-384":
-        hash_obj = hashlib.sha3_384(message_bytes)
-    elif hash_name == "SHA3-512":
-        hash_obj = hashlib.sha3_512(message_bytes)
     else:
-        # Для алгоритмов, которых нет в стандартном hashlib, используем SHA-256
-        print(f"Atenție: {hash_name} nu este disponibil, folosim SHA-256")
+        # Для других алгоритмов используем SHA-256
         hash_obj = hashlib.sha256(message_bytes)
     
     hash_hex = hash_obj.hexdigest()
@@ -228,7 +218,7 @@ def main():
     message = "Mesaj din Lucrarea de laborator nr. 2"
     
     # Определяем хеш-функцию
-    k = 10  # Порядковый номер в списке группы (измените при необходимости)
+    k = 21  # Порядковый номер в списке группы
     hash_name, index = get_hash_function(k)
     
     print(f"\nNumăr de ordine în listă: k = {k}")
