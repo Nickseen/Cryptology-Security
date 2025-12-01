@@ -1,21 +1,21 @@
 """
-Lucrare de laborator nr. 6 - FUNCȚII HASH ȘI SEMNĂTURI DIGITALE
-Sarcina 2 - Semnătură Digitală RSA
-Student: Nicolai Petcov
+Лабораторная работа № 6 - ХЕШ-ФУНКЦИИ И ЦИФРОВЫЕ ПОДПИСИ
+Задание 2 - Цифровая подпись RSA
+Студент: Nicolai Petcov
 """
 
 import hashlib
 from sympy import isprime, gcd, mod_inverse
 import random
 
-# Pentru determinarea funcției hash
-# k = numărul de ordine în lista grupei (presupunem k=10 pentru exemplu)
+# Для определения хеш-функции
+# k = порядковый номер в списке группы (предполагаем k=10 для примера)
 # i = (k mod 24) + 1
-# De exemplu: k=10 => i = (10 mod 24) + 1 = 11 => SHA-512
+# Например: k=10 => i = (10 mod 24) + 1 = 11 => SHA-512
 
 def get_hash_function(k):
     """
-    Determină funcția hash bazată pe numărul de ordine
+    Определяет хеш-функцию на основе порядкового номера
     i = (k mod 24) + 1
     """
     hash_functions = [
@@ -31,7 +31,7 @@ def get_hash_function(k):
 
 def compute_hash(message, hash_name):
     """
-    Calculează hash-ul mesajului folosind algoritmul specificat
+    Вычисляет хеш сообщения, используя указанный алгоритм
     """
     print(f"\n{'='*80}")
     print(f"CALCULAREA HASH-ULUI CU {hash_name}")
@@ -40,7 +40,7 @@ def compute_hash(message, hash_name):
     
     message_bytes = message.encode('utf-8')
     
-    # Mapare funcții hash disponibile
+    # Отображение доступных хеш-функций
     if hash_name == "MD5":
         hash_obj = hashlib.md5(message_bytes)
     elif hash_name == "SHA-1":
@@ -62,7 +62,7 @@ def compute_hash(message, hash_name):
     elif hash_name == "SHA3-512":
         hash_obj = hashlib.sha3_512(message_bytes)
     else:
-        # Pentru algoritmii care nu sunt în hashlib standard, folosim SHA-256
+        # Для алгоритмов, которых нет в стандартном hashlib, используем SHA-256
         print(f"Atenție: {hash_name} nu este disponibil, folosim SHA-256")
         hash_obj = hashlib.sha256(message_bytes)
     
@@ -77,7 +77,7 @@ def compute_hash(message, hash_name):
 
 def generate_large_prime(bits):
     """
-    Generează un număr prim mare cu numărul specificat de biți
+    Генерирует большое простое число с указанным количеством битов
     """
     print(f"Generare număr prim de {bits} biți...")
     while True:
@@ -91,7 +91,7 @@ def generate_large_prime(bits):
 
 def generate_rsa_keys(bits=3072):
     """
-    Generează cheile RSA cu modulus n de cel puțin 3072 biți
+    Генерирует ключи RSA с модулем n не менее 3072 бит
     """
     print(f"\n{'='*80}")
     print("GENERAREA CHEILOR RSA")
@@ -153,9 +153,9 @@ def generate_rsa_keys(bits=3072):
 
 def rsa_sign(message_hash, private_key):
     """
-    Semnează hash-ul mesajului folosind cheia privată RSA
+    Подписывает хеш сообщения, используя закрытый ключ RSA
     
-    Semnătură: S = H(m)^d mod n
+    Подпись: S = H(m)^d mod n
     """
     d, n = private_key
     
@@ -179,9 +179,9 @@ def rsa_sign(message_hash, private_key):
 
 def rsa_verify(message_hash, signature, public_key):
     """
-    Verifică semnătura digitală folosind cheia publică RSA
+    Проверяет цифровую подпись, используя открытый ключ RSA
     
-    Verificare: H(m) = S^e mod n
+    Проверка: H(m) = S^e mod n
     """
     e, n = public_key
     
@@ -216,44 +216,44 @@ def rsa_verify(message_hash, signature, public_key):
 
 def main():
     """
-    Funcția principală pentru Task 2
+    Главная функция для Задания 2
     """
     print(f"\n{'='*80}")
     print("SARCINA 2 - SEMNĂTURĂ DIGITALĂ RSA")
     print("Student: Nicolai Petcov")
     print(f"{'='*80}")
     
-    # Mesajul din Lucrarea de laborator nr. 2
-    # Presupunem că ai obținut acest mesaj
+    # Сообщение из Лабораторной работы № 2
+    # Предполагаем, что вы получили это сообщение
     message = "Mesaj din Lucrarea de laborator nr. 2"
     
-    # Determinăm funcția hash
-    k = 10  # Numărul de ordine în lista grupei (modifică după necesitate)
+    # Определяем хеш-функцию
+    k = 10  # Порядковый номер в списке группы (измените при необходимости)
     hash_name, index = get_hash_function(k)
     
     print(f"\nNumăr de ordine în listă: k = {k}")
     print(f"Index funcție hash: i = (k mod 24) + 1 = ({k} mod 24) + 1 = {index}")
     print(f"Funcție hash selectată: {hash_name}")
     
-    # Pas 1: Calculăm hash-ul mesajului
+    # Шаг 1: Вычисляем хеш сообщения
     message_hash, hash_hex = compute_hash(message, hash_name)
     
-    # Pas 2: Generăm cheile RSA (n ≥ 3072 biți)
+    # Шаг 2: Генерируем ключи RSA (n ≥ 3072 бит)
     public_key, private_key, p, q = generate_rsa_keys(bits=3072)
     e, n = public_key
     d, _ = private_key
     
-    # Pas 3: Semnăm mesajul
+    # Шаг 3: Подписываем сообщение
     signature = rsa_sign(message_hash, private_key)
     
     if signature is None:
         print("\nERORE la semnare!")
         return
     
-    # Pas 4: Verificăm semnătura
+    # Шаг 4: Проверяем подпись
     is_valid = rsa_verify(message_hash, signature, public_key)
     
-    # Salvăm rezultatele
+    # Сохраняем результаты
     with open('/home/fuckedupupd/cryptography/lab6_rsa_signature_results.txt', 'w', encoding='utf-8') as f:
         f.write("="*80 + "\n")
         f.write("REZULTATELE SEMNĂTURII DIGITALE RSA\n")
@@ -287,7 +287,7 @@ def main():
     
     print("\n✓ Rezultatele au fost salvate în 'lab6_rsa_signature_results.txt'")
     
-    # Demonstrație: modificarea mesajului invalidează semnătura
+    # Демонстрация: изменение сообщения делает подпись недействительной
     print(f"\n{'='*80}")
     print("DEMONSTRAȚIE: MODIFICAREA MESAJULUI")
     print(f"{'='*80}")

@@ -1,22 +1,22 @@
 """
-Lucrare de laborator nr. 6 - FUNCȚII HASH ȘI SEMNĂTURI DIGITALE
-Sarcina 3 - Semnătură Digitală ElGamal
-Student: Nicolai Petcov
+Лабораторная работа № 6 - ХЕШ-ФУНКЦИИ И ЦИФРОВЫЕ ПОДПИСИ
+Задание 3 - Цифровая подпись ElGamal
+Студент: Nicolai Petcov
 """
 
 import hashlib
 from sympy import isprime, gcd, mod_inverse
 import random
 
-# Parametrii dați în sarcină
+# Параметры, данные в задании
 P = 32317006071311007300153513477825163362488057133489075174588434139269806834136210002792056362640164685458556357935330816928829023080573472625273554742461245741026202527916572972862706300325263428213145766931414223654220941111348629991657478268034230553086349050635557712219187890332729569696129743856241741236237225197346402691855797767976823014625397933058015226858730761197532436467475855460715043896844940366130497697812854295958659597567051283852132784468522925504568272879113720098931873959143374175837826000278034973198552060607533234122603254684088120031105907484281003994966956119696956248629032338072839127039
 
 G = 2
 
 def get_hash_function_elgamal(k):
     """
-    Determină funcția hash bazată pe numărul de ordine pentru ElGamal
-    Lista diferită de funcții pentru Sarcina 3
+    Определяет хеш-функцию на основе порядкового номера для ElGamal
+    Другой список функций для Задания 3
     i = (k mod 24) + 1
     """
     hash_functions = [
@@ -32,7 +32,7 @@ def get_hash_function_elgamal(k):
 
 def compute_hash(message, hash_name):
     """
-    Calculează hash-ul mesajului folosind algoritmul specificat
+    Вычисляет хеш сообщения, используя указанный алгоритм
     """
     print(f"\n{'='*80}")
     print(f"CALCULAREA HASH-ULUI CU {hash_name}")
@@ -41,7 +41,7 @@ def compute_hash(message, hash_name):
     
     message_bytes = message.encode('utf-8')
     
-    # Mapare funcții hash disponibile
+    # Отображение доступных хеш-функций
     if hash_name == "MD5":
         hash_obj = hashlib.md5(message_bytes)
     elif hash_name == "SHA-1":
@@ -63,7 +63,7 @@ def compute_hash(message, hash_name):
     elif hash_name == "SHA3-512":
         hash_obj = hashlib.sha3_512(message_bytes)
     else:
-        # Pentru algoritmii care nu sunt în hashlib standard, folosim SHA-256
+        # Для алгоритмов, которых нет в стандартном hashlib, используем SHA-256
         print(f"Atenție: {hash_name} nu este disponibil, folosim SHA-256")
         hash_obj = hashlib.sha256(message_bytes)
     
@@ -78,7 +78,7 @@ def compute_hash(message, hash_name):
 
 def generate_elgamal_keys(p, g):
     """
-    Generează cheile ElGamal pentru semnătura digitală
+    Генерирует ключи ElGamal для цифровой подписи
     """
     print(f"\n{'='*80}")
     print("GENERAREA CHEILOR ELGAMAL")
@@ -118,14 +118,14 @@ def generate_elgamal_keys(p, g):
 
 def elgamal_sign(message_hash, private_key, p, g):
     """
-    Semnează hash-ul mesajului folosind semnătura ElGamal
+    Подписывает хеш сообщения, используя подпись ElGamal
     
-    Semnătură ElGamal:
-    1. Alege k aleatoriu, gcd(k, p-1) = 1
+    Подпись ElGamal:
+    1. Выбирает случайное k, gcd(k, p-1) = 1
     2. r = g^k mod p
     3. s = (H(m) - x*r) * k^(-1) mod (p-1)
     
-    Semnătură: (r, s)
+    Подпись: (r, s)
     """
     x = private_key
     
@@ -135,7 +135,7 @@ def elgamal_sign(message_hash, private_key, p, g):
     print(f"Hash mesaj (H(m)): {message_hash}")
     print(f"Cheia privată: x")
     
-    # Pas 1: Alegem k astfel încât gcd(k, p-1) = 1
+    # Шаг 1: Выбираем k так, чтобы gcd(k, p-1) = 1
     print(f"\nPas 1: Alegerea numărului aleatoriu k")
     print(f"k trebuie să satisfacă: 1 < k < p-1 și gcd(k, p-1) = 1")
     
@@ -151,24 +151,24 @@ def elgamal_sign(message_hash, private_key, p, g):
         print("EROARE: Nu s-a putut găsi k valid!")
         return None, None
     
-    # Pas 2: Calculăm r = g^k mod p
+    # Шаг 2: Вычисляем r = g^k mod p
     print(f"\nPas 2: Calcularea r = g^k mod p")
     r = pow(g, k, p)
     print(f"r = {g}^{k} mod {p}")
     print(f"r = {r}")
     
-    # Pas 3: Calculăm s = (H(m) - x*r) * k^(-1) mod (p-1)
+    # Шаг 3: Вычисляем s = (H(m) - x*r) * k^(-1) mod (p-1)
     print(f"\nPas 3: Calcularea s = (H(m) - x*r) * k^(-1) mod (p-1)")
     
-    # Calculăm k^(-1) mod (p-1)
+    # Вычисляем k^(-1) mod (p-1)
     k_inv = mod_inverse(k, p - 1)
     print(f"k^(-1) mod (p-1) calculat")
     
-    # Calculăm (H(m) - x*r) mod (p-1)
+    # Вычисляем (H(m) - x*r) mod (p-1)
     h_minus_xr = (message_hash - x * r) % (p - 1)
     print(f"(H(m) - x*r) mod (p-1) calculat")
     
-    # Calculăm s
+    # Вычисляем s
     s = (h_minus_xr * k_inv) % (p - 1)
     print(f"s = {s}")
     
@@ -184,9 +184,9 @@ def elgamal_sign(message_hash, private_key, p, g):
 
 def elgamal_verify(message_hash, signature, public_key):
     """
-    Verifică semnătura digitală ElGamal
+    Проверяет цифровую подпись ElGamal
     
-    Verificare:
+    Проверка:
     g^H(m) mod p = y^r * r^s mod p
     """
     r, s = signature
@@ -201,7 +201,7 @@ def elgamal_verify(message_hash, signature, public_key):
     print(f"s = {s}")
     print(f"Cheia publică: (p, g={g}, y)")
     
-    # Verificăm constrângerile
+    # Проверяем ограничения
     print(f"\nVerificăm constrângerile:")
     print(f"0 < r < p: {0 < r < p}")
     print(f"0 < s < p-1: {0 < s < p - 1}")
@@ -211,12 +211,12 @@ def elgamal_verify(message_hash, signature, public_key):
         print("Constrângerile nu sunt satisfăcute!")
         return False
     
-    # Calculăm partea stângă: g^H(m) mod p
+    # Вычисляем левую часть: g^H(m) mod p
     print(f"\nPas 1: Calculăm g^H(m) mod p")
     left_side = pow(g, message_hash, p)
     print(f"g^H(m) mod p calculat")
     
-    # Calculăm partea dreaptă: y^r * r^s mod p
+    # Вычисляем правую часть: y^r * r^s mod p
     print(f"\nPas 2: Calculăm y^r * r^s mod p")
     y_r = pow(y, r, p)
     print(f"y^r mod p calculat")
@@ -227,7 +227,7 @@ def elgamal_verify(message_hash, signature, public_key):
     right_side = (y_r * r_s) % p
     print(f"y^r * r^s mod p calculat")
     
-    # Comparăm
+    # Сравниваем
     print(f"\nPas 3: Comparăm cele două valori")
     print(f"g^H(m) mod p = {left_side}")
     print(f"y^r * r^s mod p = {right_side}")
@@ -248,43 +248,43 @@ def elgamal_verify(message_hash, signature, public_key):
 
 def main():
     """
-    Funcția principală pentru Task 3
+    Главная функция для Задания 3
     """
     print(f"\n{'='*80}")
     print("SARCINA 3 - SEMNĂTURĂ DIGITALĂ ELGAMAL")
     print("Student: Nicolai Petcov")
     print(f"{'='*80}")
     
-    # Mesajul din Lucrarea de laborator nr. 2
+    # Сообщение из Лабораторной работы № 2
     message = "Mesaj din Lucrarea de laborator nr. 2"
     
-    # Determinăm funcția hash
-    k = 10  # Numărul de ordine în lista grupei (modifică după necesitate)
+    # Определяем хеш-функцию
+    k = 10  # Порядковый номер в списке группы (измените при необходимости)
     hash_name, index = get_hash_function_elgamal(k)
     
     print(f"\nNumăr de ordine în listă: k = {k}")
     print(f"Index funcție hash: i = (k mod 24) + 1 = ({k} mod 24) + 1 = {index}")
     print(f"Funcție hash selectată: {hash_name}")
     
-    # Pas 1: Calculăm hash-ul mesajului
+    # Шаг 1: Вычисляем хеш сообщения
     message_hash, hash_hex = compute_hash(message, hash_name)
     
-    # Pas 2: Generăm cheile ElGamal
+    # Шаг 2: Генерируем ключи ElGamal
     public_key, private_key = generate_elgamal_keys(P, G)
     p, g, y = public_key
     x = private_key
     
-    # Pas 3: Semnăm mesajul
+    # Шаг 3: Подписываем сообщение
     r, s = elgamal_sign(message_hash, private_key, p, g)
     
     if r is None or s is None:
         print("\nERORE la semnare!")
         return
     
-    # Pas 4: Verificăm semnătura
+    # Шаг 4: Проверяем подпись
     is_valid = elgamal_verify(message_hash, (r, s), public_key)
     
-    # Salvăm rezultatele
+    # Сохраняем результаты
     with open('/home/fuckedupupd/cryptography/lab6_elgamal_signature_results.txt', 'w', encoding='utf-8') as f:
         f.write("="*80 + "\n")
         f.write("REZULTATELE SEMNĂTURII DIGITALE ELGAMAL\n")
@@ -318,7 +318,7 @@ def main():
     
     print("\n✓ Rezultatele au fost salvate în 'lab6_elgamal_signature_results.txt'")
     
-    # Demonstrație: modificarea mesajului invalidează semnătura
+    # Демонстрация: изменение сообщения делает подпись недействительной
     print(f"\n{'='*80}")
     print("DEMONSTRAȚIE: MODIFICAREA MESAJULUI")
     print(f"{'='*80}")
