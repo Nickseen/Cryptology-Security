@@ -1,1 +1,4 @@
 .idea/
+_pycache__/
+lab6_elgamal_signature_results.txt
+lab6_rsa_signature_results.txt

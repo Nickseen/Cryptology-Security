@@ -46,12 +46,11 @@ def compute_hash(message, hash_name):
     message_bytes = message.encode('utf-8')
     
     # Отображение доступных хеш-функций
-    # k=21 => i=22 => Haval224,4
-    # Haval использует 4 прохода и выдает 224 бита
-    # Реализуем через SHA-224 как альтернативу с похожей длиной вывода
-    if hash_name == "Haval224,4":
-        print(f"Используем SHA-224 (224 бита) как замену Haval224,4")
-        hash_obj = hashlib.sha224(message_bytes)
+    # k=21 => i=22 => NTLM
+    if hash_name == "NTLM":
+        # NTLM использует MD4 от UTF-16LE представления
+        message_utf16 = message.encode('utf-16le')
+        hash_obj = hashlib.new('md4', message_utf16)
     else:
         # Для других алгоритмов используем SHA-256
         hash_obj = hashlib.sha256(message_bytes)
