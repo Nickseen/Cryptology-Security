@@ -46,11 +46,19 @@ def compute_hash(message, hash_name):
     message_bytes = message.encode('utf-8')
     
     # Отображение доступных хеш-функций
-    # k=21 => i=22 => NTLM
-    if hash_name == "NTLM":
-        # NTLM использует MD4 от UTF-16LE представления
-        message_utf16 = message.encode('utf-16le')
-        hash_obj = hashlib.new('md4', message_utf16)
+    # k=21 => i=22 => Haval192,3
+    if hash_name == "Haval192,3":
+        from haval import Haval
+        h = Haval(passes=3, fpt_len=192)
+        h.update(message_bytes)
+        hash_hex = h.hexdigest()
+        hash_decimal = int(hash_hex, 16)
+        
+        print(f"Hash (hex): {hash_hex}")
+        print(f"Hash (decimal): {hash_decimal}")
+        print(f"Lungimea hash: {len(hash_hex) * 4} biți")
+        
+        return hash_decimal, hash_hex
     else:
         # Для других алгоритмов используем SHA-256
         hash_obj = hashlib.sha256(message_bytes)
